@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
+import type { DiaInfo } from "../types/types";
 import "./popoverDia.css";
-import type { DiaInfo } from "./types";
 
 interface PopoverDiaProps {
   anchor: { top: number; left: number } | null;
