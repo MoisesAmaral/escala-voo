@@ -1,4 +1,3 @@
----
 # ✈️ **Sistema de Escala de Voo**
 
 <div align="center">
@@ -12,8 +11,7 @@
 
 [Demonstração](#-demonstração) • [Instalação](#-instalação) • [Uso](#-como-usar) • [Documentação](#-documentação)
 
-</div>
----
+## </div>
 
 ## 📋 **Índice**
 
@@ -454,5 +452,3 @@ SOFTWARE.
 [![Made with Love](https://img.shields.io/badge/Made%20with-❤️-red?style=for-the-badge)](https://github.com/moises-amaral)
 
 </div>
-
----
