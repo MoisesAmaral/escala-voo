@@ -1,0 +1,218 @@
+/* ==================== ESCALA GRID ESPECÍFICO ==================== */
+
+.escala-grid {
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+/* Sobrescrever cores específicas para escala */
+.escala-grid .data-grid thead th {
+  background: #c8e6dc;
+  color: #020805;
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.escala-grid .data-grid tbody td {
+  font-size: 12px;
+}
+
+/* Colunas de dias mais estreitas */
+.escala-grid .data-grid tbody td {
+  min-width: 45px;
+}
+
+/* Hover nas células editáveis */
+.escala-grid .data-grid tbody td.editable:hover {
+  background-color: #dce7e3;
+}
+
+/* Células selecionadas com cor da marca */
+.escala-grid .data-grid tbody td.selected {
+  border: 2px solid #2e6b50 !important;
+  background-color: #e8f4ef;
+}
+
+/* Fill handle verde escuro */
+.escala-grid .fill-handle {
+  background-color: #2e6b50;
+  border: 2px solid #ffffff;
+}
+
+.escala-grid .fill-handle:hover {
+  background-color: #1f5039;
+}
+
+/* Range de preenchimento */
+.escala-grid .data-grid tbody td.fill-range {
+  background-color: rgba(46, 107, 80, 0.12);
+  border: 1px dashed #2e6b50;
+}
+
+/* Editor select customizado */
+.escala-grid .cell-editor-select {
+  border: 2px solid #2e6b50;
+  border-radius: 4px;
+  padding: 6px 8px;
+  font-size: 13px;
+  font-family: inherit;
+}
+
+.escala-grid .cell-editor-select:focus {
+  outline: none;
+  border-color: #1f5039;
+  box-shadow: 0 0 0 3px rgba(46, 107, 80, 0.1);
+}
+
+/* Drag handle personalizado */
+.escala-grid .drag-handle-cell {
+  background: #f9fafb;
+  border-right: 2px solid #e8f0ec;
+}
+
+.escala-grid .drag-handle-cell:hover {
+  background: #e8f0ec;
+  color: #2e6b50;
+}
+
+/* Linha sendo arrastada */
+.escala-grid .data-grid tbody tr.dragging {
+  opacity: 0.5;
+  background: #f0f5f3;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Linha onde vai soltar */
+.escala-grid .data-grid tbody tr.drag-over {
+  border-top: 3px solid #2e6b50;
+  background: rgba(46, 107, 80, 0.08);
+}
+
+/* Tooltip customizado (se necessário) */
+.escala-grid [title]:hover::after {
+  content: attr(title);
+  position: absolute;
+  background: #2c3e50;
+  color: white;
+  padding: 6px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  white-space: nowrap;
+  z-index: 1000;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-bottom: 5px;
+}
+
+/* Células com observação - ícone mais visível */
+.escala-grid .data-grid tbody td [data-has-obs="true"] {
+  position: relative;
+}
+
+.escala-grid .data-grid tbody td [data-has-obs="true"]::after {
+  content: "📝";
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  font-size: 10px;
+  opacity: 0.7;
+}
+
+/* Responsivo - scroll horizontal suave */
+.escala-grid .data-grid-container {
+  overflow-x: auto;
+  overflow-y: auto;
+}
+
+/* Scrollbar customizado para escala */
+.escala-grid .data-grid-container::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+.escala-grid .data-grid-container::-webkit-scrollbar-track {
+  background: #f0f5f3;
+  border-radius: 6px;
+}
+
+.escala-grid .data-grid-container::-webkit-scrollbar-thumb {
+  background: #c8e6dc;
+  border-radius: 6px;
+  border: 2px solid #f0f5f3;
+}
+
+.escala-grid .data-grid-container::-webkit-scrollbar-thumb:hover {
+  background: #a3c4b8;
+}
+
+/* Transições suaves */
+.escala-grid .data-grid tbody td {
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease;
+}
+
+/* Header fixo ao rolar */
+.escala-grid .data-grid thead th {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* Colunas fixas (Piloto, %, Função) */
+.escala-grid .data-grid td.pinned-left,
+.escala-grid .data-grid th.pinned-left {
+  position: sticky;
+  left: 0;
+  z-index: 5;
+  background: inherit;
+  box-shadow: 2px 0 4px rgba(0, 0, 0, 0.05);
+}
+
+.escala-grid .data-grid th.pinned-left {
+  z-index: 15;
+}
+
+/* Ajuste para drag handle quando tem pinned left */
+.escala-grid .drag-handle-cell {
+  position: sticky;
+  left: 0;
+  z-index: 6;
+}
+
+/* Linhas alternadas (zebra) - opcional */
+.escala-grid .data-grid tbody tr:nth-child(even) {
+  background-color: #fafcfb;
+}
+
+.escala-grid .data-grid tbody tr:hover {
+  background-color: #f0f5f3;
+}
+
+/* Prevenir seleção de texto durante interações */
+.escala-grid .data-grid {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Permitir seleção dentro de inputs */
+.escala-grid .cell-editor-select,
+.escala-grid .cell-editor-input {
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+}
+
+/* Performance: GPU acceleration */
+.escala-grid .data-grid tbody tr {
+  will-change: transform;
+}
+
+.escala-grid .fill-handle {
+  will-change: transform;
+}
