@@ -13,6 +13,7 @@ import type {
   DiaInfo,
   EscalaLinha,
 } from "../types/types";
+import { calcularBalanco } from "../utils/balancoCalculator"; // ← IMPORT
 import "./EscalaGrid.css";
 
 interface EscalaGridProps {
@@ -113,6 +114,12 @@ export default function EscalaGrid({ situacao }: EscalaGridProps) {
           (apiData) => {
             const dadosAdaptados = adaptarEscalasParaGrid(apiData, situacao);
 
+            // ✅ ADICIONAR BALANÇO APÓS ADAPTAR
+            const dadosComBalanco = dadosAdaptados.map((linha) => ({
+              ...linha,
+              balanco: calcularBalanco(linha.dias, 2, 0),
+            }));
+
             return {
               aeronave: {
                 id: apiData.id,
@@ -120,7 +127,7 @@ export default function EscalaGrid({ situacao }: EscalaGridProps) {
                 descricao: apiData.descricao,
                 status: situacao,
               },
-              tripulantes: dadosAdaptados,
+              tripulantes: dadosComBalanco,
               apiDataOriginal: apiData,
             };
           },
@@ -185,6 +192,7 @@ export default function EscalaGrid({ situacao }: EscalaGridProps) {
     const mes = 2;
 
     return [
+      // ✅ COLUNAS FIXAS
       {
         id: "percentual",
         header: "%",
@@ -226,6 +234,122 @@ export default function EscalaGrid({ situacao }: EscalaGridProps) {
           </div>
         ),
       },
+
+      // ✅ COLUNAS DE BALANÇO (NOVAS)
+      {
+        id: "programadas",
+        header: (
+          <div style={{ fontSize: 10, lineHeight: 1.2, textAlign: "center" }}>
+            Prog.
+          </div>
+        ),
+        width: 50,
+        getValue: (row) => row.balanco?.programadas || 0,
+        render: (value) => (
+          <div
+            style={{
+              fontSize: 12,
+              fontWeight: 600,
+              color: "#1f2937",
+              textAlign: "center",
+            }}
+          >
+            {value}
+          </div>
+        ),
+      },
+      {
+        id: "necessarias",
+        header: (
+          <div style={{ fontSize: 10, lineHeight: 1.2, textAlign: "center" }}>
+            Nec.
+          </div>
+        ),
+        width: 50,
+        getValue: (row) => row.balanco?.necessarias || 8,
+        render: (value) => (
+          <div
+            style={{
+              fontSize: 12,
+              fontWeight: 600,
+              color: "#1f2937",
+              textAlign: "center",
+            }}
+          >
+            {value}
+          </div>
+        ),
+      },
+      {
+        id: "faltante",
+        header: (
+          <div style={{ fontSize: 10, lineHeight: 1.2, textAlign: "center" }}>
+            Falt.
+          </div>
+        ),
+        width: 50,
+        getValue: (row) => row.balanco?.faltante || 0,
+        getStyle: (value) => ({
+          backgroundColor: value > 0 ? "#ffb3b3" : "transparent",
+        }),
+        render: (value) => (
+          <div
+            style={{
+              fontSize: 12,
+              fontWeight: value > 0 ? 700 : 600,
+              color: value > 0 ? "#dc2626" : "#1f2937",
+              textAlign: "center",
+            }}
+          >
+            {value}
+          </div>
+        ),
+      },
+      {
+        id: "ps",
+        header: "PS",
+        width: 45,
+        getValue: (row) => row.balanco?.ps || 2,
+        getStyle: (value) => ({
+          backgroundColor: value === 5 ? "#b3ffb3" : "transparent",
+        }),
+        render: (value) => (
+          <div
+            style={{
+              fontSize: 12,
+              fontWeight: 600,
+              color: value === 5 ? "#16a34a" : "#1f2937",
+              textAlign: "center",
+            }}
+          >
+            {value}
+          </div>
+        ),
+      },
+      {
+        id: "ferias",
+        header: (
+          <div style={{ fontSize: 10, lineHeight: 1.2, textAlign: "center" }}>
+            Férias
+          </div>
+        ),
+        width: 50,
+        getValue: (row) => row.balanco?.ferias || 0,
+        render: (value) => (
+          <div
+            style={{
+              fontSize: 12,
+              fontWeight: 600,
+              color: "#1f2937",
+              textAlign: "center",
+            }}
+          >
+            {value}
+          </div>
+        ),
+      },
+
+      // ✅ COLUNAS DE DIAS
       ...Array.from({ length: 29 }, (_, i) => {
         const dia = i + 1;
         const campoDia = `d${String(dia).padStart(2, "0")}`;
@@ -370,18 +494,25 @@ export default function EscalaGrid({ situacao }: EscalaGridProps) {
       isMultiple?: boolean;
     },
   ) => {
-    console.log("🔍 handleDataChange chamado:", changeInfo); // ← LOG
+    // ✅ RECALCULAR BALANÇO após mudança
+    const dataComBalanco = newData.map((linha) => ({
+      ...linha,
+      balanco: calcularBalanco(
+        linha.dias,
+        linha.balanco?.ps || 2,
+        linha.balanco?.ferias || 0,
+      ),
+    }));
 
     setAeronaves((prev) =>
       prev.map((aeronaveData) =>
         aeronaveData.aeronave.id === aeronaveId
-          ? { ...aeronaveData, tripulantes: newData }
+          ? { ...aeronaveData, tripulantes: dataComBalanco }
           : aeronaveData,
       ),
     );
 
     if (changeInfo?.isMultiple) {
-      console.log("📦 Múltiplas células"); // ← LOG
       setModalTexto({
         tipo: "sucesso",
         titulo: "Células atualizadas",
@@ -395,22 +526,18 @@ export default function EscalaGrid({ situacao }: EscalaGridProps) {
       changeInfo.rowIndex !== undefined &&
       changeInfo.columnId
     ) {
-      const linha = newData[changeInfo.rowIndex];
+      const linha = dataComBalanco[changeInfo.rowIndex];
       const diaMatch = changeInfo.columnId.match(/^d(\d+)$/);
-
-      console.log("📝 Uma célula:", { linha, diaMatch }); // ← LOG
 
       if (linha && diaMatch) {
         const numeroDia = parseInt(diaMatch[1]);
         const nomes = linha.nome.trim().split(/\s+/);
         const sobrenome = nomes[nomes.length - 1];
 
-        const mensagem = `${sobrenome} • Dia ${numeroDia}: ${changeInfo.newValue || "Vazio"}`;
-        console.log("✅ Toast mensagem:", mensagem); // ← LOG
-        setToastMessage(mensagem);
+        setToastMessage(
+          `${sobrenome} • Dia ${numeroDia}: ${changeInfo.newValue || "Vazio"}`,
+        );
       }
-    } else {
-      console.log("⚠️ Nenhuma condição atendida"); // ← LOG
     }
   };
 
@@ -595,7 +722,7 @@ export default function EscalaGrid({ situacao }: EscalaGridProps) {
         <Toast
           message={toastMessage}
           onClose={() => setToastMessage(null)}
-          duration={2000}
+          duration={4000}
         />
       )}
     </div>

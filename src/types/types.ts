@@ -26,6 +26,14 @@ export type DiaInfo = {
   obs?: string;
 };
 
+export interface Balanco {
+  programadas: number;
+  necessarias: number;
+  faltante: number;
+  ps: number;
+  ferias: number;
+}
+
 export interface EscalaLinha {
   id: number;
   percentual: string;
@@ -33,6 +41,7 @@ export interface EscalaLinha {
   nome: string;
   frota: string;
   dias: Record<string, DiaInfo>;
+  balanco?: Balanco; // ← OPCIONAL (calculado no front)
 }
 
 export interface ApiResponse {
