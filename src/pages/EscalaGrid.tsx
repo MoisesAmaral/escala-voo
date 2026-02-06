@@ -1,10 +1,23 @@
-import { useState } from "react";
-import { DataGrid, type Column } from "../components/DataGrid";
+import { useEffect, useState } from "react";
+
+import { adaptarEscalasParaGrid } from "../adapters/escalaAdapter";
+import AeronaveSection from "../components/AeronaveSection";
+import type { Column } from "../components/DataGrid";
 import ModalNotificacao from "../components/ModalNotificacao";
 import PopoverDia from "../components/PopoverDia";
-import { dadosFake } from "../data/mockData";
-import type { CodigoDia, DiaInfo, EscalaLinha } from "../types/types";
+import Toast from "../components/Toast";
+import { fetchEscalas } from "../services/escalaService";
+import type {
+  ApiResponse,
+  CodigoDia,
+  DiaInfo,
+  EscalaLinha,
+} from "../types/types";
 import "./EscalaGrid.css";
+
+interface EscalaGridProps {
+  situacao: "Sugerida" | "Divulgada" | "Confirmada";
+}
 
 interface ModalInfo {
   tipo: "sucesso" | "erro";
@@ -12,6 +25,17 @@ interface ModalInfo {
   piloto: string;
   dia: string;
   codigo: string;
+}
+
+interface AeronaveData {
+  aeronave: {
+    id: number;
+    nome: string;
+    descricao: string;
+    status: "Sugerida" | "Divulgada" | "Confirmada";
+  };
+  tripulantes: EscalaLinha[];
+  apiDataOriginal: ApiResponse;
 }
 
 const codigos: CodigoDia[] = [
@@ -58,189 +82,391 @@ const cores: Record<CodigoDia, string | undefined> = {
   "": undefined,
 };
 
-export default function EscalaGrid() {
-  const [data, setData] = useState<EscalaLinha[]>(dadosFake);
+export default function EscalaGrid({ situacao }: EscalaGridProps) {
+  const [aeronaves, setAeronaves] = useState<AeronaveData[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // MODAL
   const [modalOpen, setModalOpen] = useState(false);
   const [modalTexto, setModalTexto] = useState<ModalInfo | null>(null);
 
-  // POPOVER
   const [popoverAnchor, setPopoverAnchor] = useState<{
     top: number;
     left: number;
   } | null>(null);
   const [popoverData, setPopoverData] = useState<{
+    aeronaveId: number;
     linhaIndex: number;
     campoDia: string;
     diaInfo: DiaInfo;
   } | null>(null);
 
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function carregarDados() {
+      try {
+        setLoading(true);
+        const todasAeronaves = await fetchEscalas();
+
+        const aeronavesProcesadas: AeronaveData[] = todasAeronaves.map(
+          (apiData) => {
+            const dadosAdaptados = adaptarEscalasParaGrid(apiData, situacao);
+
+            return {
+              aeronave: {
+                id: apiData.id,
+                nome: apiData.nome,
+                descricao: apiData.descricao,
+                status: situacao,
+              },
+              tripulantes: dadosAdaptados,
+              apiDataOriginal: apiData,
+            };
+          },
+        );
+
+        setAeronaves(aeronavesProcesadas);
+      } catch (err) {
+        setError("Erro ao carregar dados da API");
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    carregarDados();
+  }, [situacao]);
+
   const salvarObs = (obs: string) => {
     if (!popoverData) return;
 
-    setData((prev) => {
-      const copia = [...prev];
-      const linha = copia[popoverData.linhaIndex];
+    setAeronaves((prev) =>
+      prev.map((aeronaveData) => {
+        if (aeronaveData.aeronave.id !== popoverData.aeronaveId) {
+          return aeronaveData;
+        }
 
-      linha.dias[popoverData.campoDia] = {
-        ...linha.dias[popoverData.campoDia],
-        obs,
-      };
+        const novosTripulantes = [...aeronaveData.tripulantes];
+        const linha = novosTripulantes[popoverData.linhaIndex];
 
-      return copia;
-    });
+        linha.dias[popoverData.campoDia] = {
+          ...linha.dias[popoverData.campoDia],
+          obs,
+        };
+
+        return {
+          ...aeronaveData,
+          tripulantes: novosTripulantes,
+        };
+      }),
+    );
   };
 
-  // DEFINIR COLUNAS
-  const columns: Column<EscalaLinha>[] = [
-    {
-      id: "percentual",
-      header: "%",
-      width: 55,
-      pinned: "left",
-      getValue: (row) => row.percentual,
-    },
-    {
-      id: "funcao",
-      header: "Função",
-      width: 75,
-      pinned: "left",
-      getValue: (row) => row.funcao,
-    },
-    {
-      id: "nome",
-      header: "Piloto",
-      width: 150,
-      pinned: "left",
-      getValue: (row) => row.nome,
-      render: (value) => (
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "6px",
-            padding: "0 6px",
-          }}
-        >
+  const criarColunas = (aeronaveId: number): Column<EscalaLinha>[] => {
+    const getDiaDaSemana = (dia: number, mes: number, ano: number): string => {
+      const date = new Date(ano, mes - 1, dia);
+      const dias = ["D", "S", "T", "Q", "Q", "S", "S"];
+      return dias[date.getDay()];
+    };
+
+    const getCor = (diaSemana: string): string => {
+      switch (diaSemana) {
+        case "S":
+          return "#ef4444";
+        case "D":
+          return "#ef4444";
+        default:
+          return "#9ca3af";
+      }
+    };
+
+    const ano = 2026;
+    const mes = 2;
+
+    return [
+      {
+        id: "percentual",
+        header: "%",
+        width: 55,
+        pinned: "left",
+        getValue: (row) => row.percentual,
+      },
+      {
+        id: "funcao",
+        header: "Função",
+        width: 75,
+        pinned: "left",
+        getValue: (row) => row.funcao,
+      },
+      {
+        id: "nome",
+        header: "Piloto",
+        width: 120,
+        pinned: "left",
+        getValue: (row) => {
+          const nomes = row.nome.trim().split(/\s+/);
+          return nomes[nomes.length - 1];
+        },
+        getTooltip: (row) => row.nome,
+        render: (value, row) => (
           <div
             style={{
-              width: 28,
-              height: 28,
-              borderRadius: "50%",
-              background: "#2e6b50",
-              color: "white",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              fontWeight: 600,
-              fontSize: 11,
+              padding: "0 8px",
+              cursor: "help",
             }}
+            title={row.nome}
           >
-            {value.substring(0, 2)}
+            <span style={{ fontSize: 12, fontWeight: 500, color: "#1a1a1a" }}>
+              {value}
+            </span>
           </div>
-          <span style={{ fontSize: 12 }}>{value}</span>
-        </div>
-      ),
-    },
-    // 29 DIAS
-    ...Array.from({ length: 29 }, (_, i) => {
-      const campoDia = `d${String(i + 1).padStart(2, "0")}`;
+        ),
+      },
+      ...Array.from({ length: 29 }, (_, i) => {
+        const dia = i + 1;
+        const campoDia = `d${String(dia).padStart(2, "0")}`;
+        const diaSemana = getDiaDaSemana(dia, mes, ano);
+        const cor = getCor(diaSemana);
+        const isFimDeSemana = diaSemana === "S" || diaSemana === "D";
 
-      return {
-        id: campoDia,
-        header: String(i + 1),
-        width: 42,
-        minWidth: 42,
-        editable: true,
-        editor: "select" as const,
-        options: codigos,
-        getValue: (row: EscalaLinha) => row.dias[campoDia]?.valor || "",
-        setValue: (row: EscalaLinha, value: any) => {
-          if (!row.dias[campoDia]) {
-            row.dias[campoDia] = { valor: "", obs: "" };
-          }
-          row.dias[campoDia].valor = value as CodigoDia;
-        },
-        getStyle: (value: any) => {
-          const cor = cores[value as CodigoDia];
-          return cor ? { backgroundColor: cor } : {};
-        },
-        getTooltip: (row: EscalaLinha) => {
-          const obs = row.dias[campoDia]?.obs;
-          return obs && obs.trim() ? `📝 ${obs}` : null;
-        },
-        onDoubleClick: (
-          row: EscalaLinha,
-          rowIndex: number,
-          _column: any,
-          event: React.MouseEvent,
-        ) => {
-          // ✅ VALIDAÇÃO: Só abre popover se célula tiver valor
-          const valorAtual = row.dias[campoDia]?.valor;
-
-          if (!valorAtual || valorAtual.trim() === "") {
-            // Mostrar feedback visual de erro
-            setModalTexto({
-              tipo: "erro",
-              titulo: "Célula vazia",
-              piloto: row.nome,
-              dia: `Dia ${i + 1}`,
-              codigo: "Preencha a célula antes de adicionar observação",
-            });
-            setModalOpen(true);
-            return;
-          }
-
-          // Se tem valor, abre o popover
-          const rect = (event.target as HTMLElement).getBoundingClientRect();
-
-          setPopoverAnchor({
-            top: rect.top,
-            left: rect.left,
-          });
-
-          setPopoverData({
-            linhaIndex: rowIndex,
-            campoDia,
-            diaInfo: row.dias[campoDia],
-          });
-        },
-        render: (value: any, row: EscalaLinha) => {
-          const temObs =
-            row.dias[campoDia]?.obs && row.dias[campoDia].obs.trim().length > 0;
-          return (
+        return {
+          id: campoDia,
+          header: (
             <div
               style={{
                 display: "flex",
+                flexDirection: "column",
                 alignItems: "center",
-                justifyContent: "center",
-                gap: 3,
-                fontSize: 12,
-                cursor: value && value.trim() ? "pointer" : "default", // ← Cursor indica se pode adicionar obs
+                gap: "2px",
+                padding: "6px 2px",
               }}
             >
-              <span>{value}</span>
-              {temObs && <span style={{ fontSize: 9 }}>📝</span>}
+              <div
+                style={{
+                  width: "16px",
+                  height: "16px",
+                  background: isFimDeSemana
+                    ? `linear-gradient(135deg, ${cor} 0%, ${cor}dd 100%)`
+                    : "transparent",
+                  color: isFimDeSemana ? "white" : "#9ca3af",
+                  borderRadius: "3px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: "8px",
+                  fontWeight: isFimDeSemana ? 700 : 600,
+                  border: isFimDeSemana ? "none" : "1px solid #e5e7eb",
+                  boxShadow: isFimDeSemana
+                    ? "0 1px 3px rgba(239, 68, 68, 0.3)"
+                    : "none",
+                  transition: "all 0.2s ease",
+                }}
+              >
+                {diaSemana}
+              </div>
+              <span
+                style={{
+                  fontSize: "10px",
+                  fontWeight: 600,
+                  color: isFimDeSemana ? "#ef4444" : "#6b7280",
+                  lineHeight: 1,
+                }}
+              >
+                {dia}
+              </span>
             </div>
-          );
-        },
-      };
-    }),
-  ];
+          ),
+          width: 42,
+          minWidth: 42,
+          editable: true,
+          editor: "select" as const,
+          options: codigos,
+          getValue: (row: EscalaLinha) => row.dias[campoDia]?.valor || "",
+          setValue: (row: EscalaLinha, value: any) => {
+            if (!row.dias[campoDia]) {
+              row.dias[campoDia] = { valor: "", obs: "" };
+            }
+            row.dias[campoDia].valor = value as CodigoDia;
+          },
+          getStyle: (value: any) => {
+            const corCelula = cores[value as CodigoDia];
+            return corCelula ? { backgroundColor: corCelula } : {};
+          },
+          getTooltip: (row: EscalaLinha) => {
+            const obs = row.dias[campoDia]?.obs;
+            return obs && obs.trim() ? `📝 ${obs}` : null;
+          },
+          onDoubleClick: (
+            row: EscalaLinha,
+            rowIndex: number,
+            _column: any,
+            event: React.MouseEvent,
+          ) => {
+            const valorAtual = row.dias[campoDia]?.valor;
 
-  const handleDataChange = (newData: EscalaLinha[]) => {
-    setData(newData);
+            if (!valorAtual || valorAtual.trim() === "") {
+              setModalTexto({
+                tipo: "erro",
+                titulo: "Célula vazia",
+                piloto: row.nome,
+                dia: `Dia ${dia}`,
+                codigo: "Preencha a célula antes de adicionar observação",
+              });
+              setModalOpen(true);
+              return;
+            }
 
-    setModalTexto({
-      tipo: "sucesso",
-      titulo: "Células atualizadas",
-      piloto: "Múltiplas células",
-      dia: "Múltiplos dias",
-      codigo: "Aplicado",
-    });
-    setModalOpen(true);
+            const rect = (event.target as HTMLElement).getBoundingClientRect();
+
+            setPopoverAnchor({
+              top: rect.top,
+              left: rect.left,
+            });
+
+            setPopoverData({
+              aeronaveId,
+              linhaIndex: rowIndex,
+              campoDia,
+              diaInfo: row.dias[campoDia],
+            });
+          },
+          render: (value: any, row: EscalaLinha) => {
+            const temObs =
+              row.dias[campoDia]?.obs &&
+              row.dias[campoDia].obs.trim().length > 0;
+            return (
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: 3,
+                  fontSize: 12,
+                  cursor: value && value.trim() ? "pointer" : "default",
+                }}
+              >
+                <span>{value}</span>
+                {temObs && <span style={{ fontSize: 9 }}>📝</span>}
+              </div>
+            );
+          },
+        };
+      }),
+    ];
   };
+
+  const handleDataChange = (
+    aeronaveId: number,
+    newData: EscalaLinha[],
+    changeInfo?: {
+      rowIndex?: number;
+      columnId?: string;
+      oldValue?: any;
+      newValue?: any;
+      isMultiple?: boolean;
+    },
+  ) => {
+    console.log("🔍 handleDataChange chamado:", changeInfo); // ← LOG
+
+    setAeronaves((prev) =>
+      prev.map((aeronaveData) =>
+        aeronaveData.aeronave.id === aeronaveId
+          ? { ...aeronaveData, tripulantes: newData }
+          : aeronaveData,
+      ),
+    );
+
+    if (changeInfo?.isMultiple) {
+      console.log("📦 Múltiplas células"); // ← LOG
+      setModalTexto({
+        tipo: "sucesso",
+        titulo: "Células atualizadas",
+        piloto: "Múltiplas alterações",
+        dia: "Múltiplos dias",
+        codigo: "Aplicado em lote",
+      });
+      setModalOpen(true);
+    } else if (
+      changeInfo &&
+      changeInfo.rowIndex !== undefined &&
+      changeInfo.columnId
+    ) {
+      const linha = newData[changeInfo.rowIndex];
+      const diaMatch = changeInfo.columnId.match(/^d(\d+)$/);
+
+      console.log("📝 Uma célula:", { linha, diaMatch }); // ← LOG
+
+      if (linha && diaMatch) {
+        const numeroDia = parseInt(diaMatch[1]);
+        const nomes = linha.nome.trim().split(/\s+/);
+        const sobrenome = nomes[nomes.length - 1];
+
+        const mensagem = `${sobrenome} • Dia ${numeroDia}: ${changeInfo.newValue || "Vazio"}`;
+        console.log("✅ Toast mensagem:", mensagem); // ← LOG
+        setToastMessage(mensagem);
+      }
+    } else {
+      console.log("⚠️ Nenhuma condição atendida"); // ← LOG
+    }
+  };
+
+  if (loading) {
+    return (
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100%",
+          fontSize: 16,
+          color: "#6b7280",
+        }}
+      >
+        ⏳ Carregando dados...
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100%",
+          fontSize: 16,
+          color: "#ef4444",
+        }}
+      >
+        ❌ {error}
+      </div>
+    );
+  }
+
+  if (aeronaves.length === 0) {
+    return (
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100%",
+          gap: "12px",
+        }}
+      >
+        <div style={{ fontSize: 48 }}>✈️</div>
+        <div style={{ fontSize: 16, color: "#6b7280" }}>
+          Nenhuma aeronave encontrada
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -248,21 +474,109 @@ export default function EscalaGrid() {
         height: "100%",
         display: "flex",
         flexDirection: "column",
-        background: "white",
-        borderRadius: "12px",
-        overflow: "hidden",
-        boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
+        gap: "16px",
+        overflow: "auto",
+        padding: "8px",
       }}
     >
-      <DataGrid
-        columns={columns}
-        data={data}
-        onDataChange={handleDataChange}
-        rowHeight={40}
-        enableFillHandle={true}
-        enableRowDrag={true}
-        className="escala-grid"
-      />
+      <div
+        style={{
+          padding: "16px 20px",
+          background: "white",
+          borderRadius: "12px",
+          boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          flexShrink: 0,
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+          <span style={{ fontSize: 24 }}>🛩️</span>
+          <div>
+            <div
+              style={{
+                fontFamily: "Poppins",
+                fontSize: 16,
+                fontWeight: 600,
+                color: "#1a1a1a",
+              }}
+            >
+              {aeronaves.length}{" "}
+              {aeronaves.length === 1 ? "Aeronave" : "Aeronaves"}
+            </div>
+            <div
+              style={{
+                fontFamily: "Poppins",
+                fontSize: 13,
+                color: "#6b7280",
+              }}
+            >
+              Situação: {situacao}
+            </div>
+          </div>
+        </div>
+
+        <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+          <span style={{ fontSize: 11, color: "#6b7280", marginRight: "4px" }}>
+            Legenda:
+          </span>
+          <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+            <div
+              style={{
+                width: "14px",
+                height: "14px",
+                background: "transparent",
+                color: "#9ca3af",
+                borderRadius: "3px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: "8px",
+                fontWeight: 600,
+                border: "1px solid #e5e7eb",
+              }}
+            >
+              S
+            </div>
+            <span style={{ fontSize: 11, color: "#6b7280" }}>Dias úteis</span>
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+            <div
+              style={{
+                width: "14px",
+                height: "14px",
+                background:
+                  "linear-gradient(135deg, #ef4444 0%, #ef4444dd 100%)",
+                color: "white",
+                borderRadius: "3px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: "8px",
+                fontWeight: 700,
+                boxShadow: "0 1px 3px rgba(239, 68, 68, 0.3)",
+              }}
+            >
+              D
+            </div>
+            <span style={{ fontSize: 11, color: "#6b7280" }}>
+              Fim de semana
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {aeronaves.map((aeronaveData, index) => (
+        <AeronaveSection
+          key={aeronaveData.aeronave.id}
+          aeronave={aeronaveData.aeronave}
+          tripulantes={aeronaveData.tripulantes}
+          columns={criarColunas(aeronaveData.aeronave.id)}
+          onDataChange={handleDataChange}
+          defaultExpanded={index === 0}
+        />
+      ))}
 
       <ModalNotificacao
         open={modalOpen}
@@ -276,6 +590,14 @@ export default function EscalaGrid() {
         onClose={() => setPopoverAnchor(null)}
         onSave={salvarObs}
       />
+
+      {toastMessage && (
+        <Toast
+          message={toastMessage}
+          onClose={() => setToastMessage(null)}
+          duration={2000}
+        />
+      )}
     </div>
   );
 }

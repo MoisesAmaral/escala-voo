@@ -36,7 +36,7 @@ export default function PopoverDia({
         }}
       >
         <div className="popover-header">
-          <span className="popover-title">📝 Observação</span>
+          <span className="popover-title">Observação</span>
           <button className="popover-close" onClick={onClose}>
             ✕
           </button>

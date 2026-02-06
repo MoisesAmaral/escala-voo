@@ -1,79 +1,449 @@
+/* ==================== OVERLAY DISCRETO ==================== */
+
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.35);
+  background: linear-gradient(
+    135deg,
+    rgba(46, 107, 80, 0.08) 0%,
+    rgba(0, 0, 0, 0.15) 50%,
+    rgba(46, 107, 80, 0.12) 100%
+  );
+  backdrop-filter: blur(6px) saturate(120%);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 50;
+  z-index: 250;
+  animation: overlayFadeIn 0.25s ease;
+  padding: 20px;
 }
 
-.modal-card {
-  background: #ffffff;
-  padding: 22px 26px;
-  border-radius: 12px;
-  width: 350px;
-  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.25);
-  animation: popup 0.25s ease;
-}
-
-@keyframes popup {
+@keyframes overlayFadeIn {
   from {
-    transform: scale(0.85);
     opacity: 0;
+    backdrop-filter: blur(0px);
   }
   to {
-    transform: scale(1);
+    opacity: 1;
+    backdrop-filter: blur(6px) saturate(120%);
+  }
+}
+
+/* ==================== CARD COMPACTO ==================== */
+
+.modal-card {
+  background: linear-gradient(180deg, #ffffff 0%, #fafcfb 100%);
+  padding: 0;
+  border-radius: 16px;
+  width: 380px;
+  max-width: calc(100vw - 40px);
+  box-shadow:
+    0 16px 48px rgba(46, 107, 80, 0.25),
+    0 8px 24px rgba(0, 0, 0, 0.15),
+    0 0 0 1px rgba(46, 107, 80, 0.08);
+  animation: modalPopup 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  border: 1px solid rgba(212, 228, 220, 0.6);
+  overflow: hidden;
+}
+
+@keyframes modalPopup {
+  0% {
+    transform: scale(0.85) translateY(20px);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.02) translateY(-3px);
+  }
+  100% {
+    transform: scale(1) translateY(0);
     opacity: 1;
   }
 }
 
+/* ==================== HEADER SIMPLES E ELEGANTE ==================== */
+
 .modal-header {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 12px;
+  gap: 12px;
+  padding: 20px 24px;
+  background: linear-gradient(135deg, #e8f4ef 0%, #d4ebe3 100%);
+  border-bottom: 2px solid rgba(46, 107, 80, 0.12);
+  position: relative;
 }
 
+.modal-header::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    #2e6b50 20%,
+    #1f5039 50%,
+    #2e6b50 80%,
+    transparent 100%
+  );
+  opacity: 0.7;
+}
+
+/* ==================== ÍCONE COMPACTO ==================== */
+
 .modal-icon {
-  font-size: 26px;
+  font-size: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.9) 0%,
+    rgba(255, 255, 255, 0.7) 100%
+  );
+  border-radius: 12px;
+  box-shadow:
+    0 4px 12px rgba(46, 107, 80, 0.15),
+    inset 0 1px 2px rgba(255, 255, 255, 1);
+  animation: iconBounce 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes iconBounce {
+  0% {
+    transform: scale(0) rotate(-90deg);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.1) rotate(5deg);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+/* ==================== TÍTULO COMPACTO ==================== */
+
+.modal-header h3 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 700;
+  color: #0d4a35;
+  letter-spacing: 0.3px;
+}
+
+/* ==================== BODY COMPACTO ==================== */
+
+.modal-body {
+  padding: 20px 24px;
+  background: linear-gradient(180deg, #fafcfb 0%, #ffffff 100%);
 }
 
 .modal-body p {
-  margin: 4px 0;
-  color: #1c2b27;
-  font-size: 15px;
+  margin: 8px 0;
+  color: #374151;
+  font-size: 14px;
+  line-height: 1.5;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: rgba(46, 107, 80, 0.04);
+  border-radius: 8px;
+  border-left: 3px solid rgba(46, 107, 80, 0.25);
+  transition: all 0.2s ease;
 }
+
+.modal-body p:hover {
+  background: rgba(46, 107, 80, 0.08);
+  border-left-color: rgba(46, 107, 80, 0.4);
+  transform: translateX(2px);
+}
+
+.modal-body p::before {
+  content: "→";
+  font-size: 14px;
+  font-weight: 700;
+  color: #2e6b50;
+  flex-shrink: 0;
+}
+
+.modal-body p:first-child {
+  margin-top: 0;
+}
+
+.modal-body p:last-child {
+  margin-bottom: 0;
+}
+
+.modal-body strong {
+  color: #2e6b50;
+  font-weight: 700;
+}
+
+/* ==================== FOOTER COMPACTO ==================== */
 
 .modal-footer {
-  margin-top: 18px;
+  padding: 16px 24px;
+  background: linear-gradient(180deg, #f9fdfb 0%, #f0f5f3 100%);
+  border-top: 2px solid rgba(46, 107, 80, 0.08);
   display: flex;
   justify-content: flex-end;
-  gap: 12px;
+  gap: 10px;
 }
 
-.btn-ok {
-  background: #2e6b50;
-  color: white;
+/* ==================== BOTÕES REFINADOS E COMPACTOS ==================== */
+
+.modal-footer .btn-ok {
+  background: linear-gradient(135deg, #2e6b50 0%, #1f5039 100%);
+  color: #ffffff;
   border: none;
-  padding: 8px 16px;
-  border-radius: 6px;
+  padding: 10px 24px;
+  border-radius: 10px;
   cursor: pointer;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow:
+    0 4px 14px rgba(46, 107, 80, 0.3),
+    0 2px 6px rgba(0, 0, 0, 0.15),
+    inset 0 1px 2px rgba(255, 255, 255, 0.2);
+  position: relative;
+  overflow: hidden;
 }
 
-.btn-ok:hover {
-  background: #1f5039;
+.modal-footer .btn-ok::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition:
+    width 0.4s ease,
+    height 0.4s ease;
 }
 
-.btn-cancelar {
-  background: #c9c9c9;
-  color: #333;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 6px;
+.modal-footer .btn-ok:hover {
+  background: linear-gradient(135deg, #1f5039 0%, #0f3020 100%);
+  transform: translateY(-2px) scale(1.02);
+  box-shadow:
+    0 6px 20px rgba(46, 107, 80, 0.4),
+    0 3px 10px rgba(0, 0, 0, 0.2),
+    inset 0 1px 3px rgba(255, 255, 255, 0.25);
+}
+
+.modal-footer .btn-ok:hover::before {
+  width: 300px;
+  height: 300px;
+}
+
+.modal-footer .btn-ok:active {
+  transform: translateY(0) scale(1);
+  box-shadow:
+    0 2px 8px rgba(46, 107, 80, 0.3),
+    0 1px 4px rgba(0, 0, 0, 0.15),
+    inset 0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+.modal-footer .btn-cancelar {
+  background: linear-gradient(180deg, #f3f4f6 0%, #e5e7eb 100%);
+  color: #4b5563;
+  border: 1px solid rgba(107, 114, 128, 0.2);
+  padding: 10px 22px;
+  border-radius: 10px;
   cursor: pointer;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.08),
+    inset 0 1px 2px rgba(255, 255, 255, 0.9);
 }
 
-.btn-cancelar:hover {
-  background: #b6b6b6;
+.modal-footer .btn-cancelar:hover {
+  background: linear-gradient(180deg, #e5e7eb 0%, #d1d5db 100%);
+  color: #1f2937;
+  transform: translateY(-2px);
+  border-color: rgba(107, 114, 128, 0.3);
+  box-shadow:
+    0 4px 14px rgba(0, 0, 0, 0.12),
+    inset 0 1px 3px rgba(255, 255, 255, 1);
+}
+
+.modal-footer .btn-cancelar:active {
+  transform: translateY(0);
+  box-shadow:
+    0 1px 4px rgba(0, 0, 0, 0.1),
+    inset 0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+/* ==================== VARIANTES DE TIPO (SIMPLES) ==================== */
+
+/* Sucesso */
+.modal-card.success .modal-header {
+  background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+}
+
+.modal-card.success .modal-header::before {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    #10b981 20%,
+    #059669 50%,
+    #10b981 80%,
+    transparent 100%
+  );
+}
+
+/* Erro */
+.modal-card.error .modal-header {
+  background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+}
+
+.modal-card.error .modal-header::before {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    #ef4444 20%,
+    #dc2626 50%,
+    #ef4444 80%,
+    transparent 100%
+  );
+}
+
+/* Aviso */
+.modal-card.warning .modal-header {
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+}
+
+.modal-card.warning .modal-header::before {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    #f59e0b 20%,
+    #d97706 50%,
+    #f59e0b 80%,
+    transparent 100%
+  );
+}
+
+/* ==================== ANIMAÇÃO DE SAÍDA ==================== */
+
+.modal-overlay.closing {
+  animation: overlayFadeOut 0.2s ease forwards;
+}
+
+.modal-card.closing {
+  animation: modalPopout 0.25s ease forwards;
+}
+
+@keyframes overlayFadeOut {
+  from {
+    opacity: 1;
+    backdrop-filter: blur(6px);
+  }
+  to {
+    opacity: 0;
+    backdrop-filter: blur(0px);
+  }
+}
+
+@keyframes modalPopout {
+  0% {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0.9) translateY(15px);
+    opacity: 0;
+  }
+}
+
+/* ==================== RESPONSIVIDADE ==================== */
+
+@media (max-width: 768px) {
+  .modal-card {
+    width: calc(100vw - 32px);
+    max-width: 380px;
+  }
+
+  .modal-header {
+    padding: 18px 20px;
+  }
+
+  .modal-icon {
+    font-size: 28px;
+    width: 44px;
+    height: 44px;
+  }
+
+  .modal-header h3 {
+    font-size: 16px;
+  }
+
+  .modal-body {
+    padding: 18px 20px;
+  }
+
+  .modal-body p {
+    font-size: 13px;
+    padding: 7px 10px;
+  }
+
+  .modal-footer {
+    padding: 14px 20px;
+    flex-direction: column;
+  }
+
+  .modal-footer .btn-ok,
+  .modal-footer .btn-cancelar {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* ==================== FOCO ACESSÍVEL ==================== */
+
+.modal-footer .btn-ok:focus-visible,
+.modal-footer .btn-cancelar:focus-visible {
+  outline: 3px solid rgba(46, 107, 80, 0.4);
+  outline-offset: 2px;
+}
+
+/* ==================== REDUÇÃO DE MOVIMENTO ==================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .modal-overlay,
+  .modal-card,
+  .modal-icon,
+  .modal-footer .btn-ok,
+  .modal-footer .btn-cancelar,
+  .modal-body p {
+    animation: none;
+    transition: none;
+  }
+
+  .modal-footer .btn-ok:hover,
+  .modal-footer .btn-cancelar:hover,
+  .modal-body p:hover {
+    transform: none;
+  }
+}
+
+/* ==================== PREVENT BODY SCROLL ==================== */
+
+body:has(.modal-overlay) {
+  overflow: hidden;
 }

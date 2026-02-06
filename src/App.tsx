@@ -1,8 +1,14 @@
+import { useState } from "react";
+import HelpPanel from "./components/HelpPanel";
+import SituacaoSelector from "./components/SituacaoSelector";
 import EscalaGrid from "./pages/EscalaGrid";
 import "./styles/layout.css";
 
 export default function App() {
-  const currentYear = new Date().getFullYear();
+  const [situacao, setSituacao] = useState<
+    "Sugerida" | "Divulgada" | "Confirmada"
+  >("Confirmada");
+  const [showHelp, setShowHelp] = useState(false);
 
   return (
     <div className="app-container">
@@ -15,50 +21,41 @@ export default function App() {
               <p className="subtitle">Fevereiro 2026</p>
             </div>
           </div>
+
+          <div className="header-actions">
+            <button
+              className="btn-help"
+              onClick={() => setShowHelp(!showHelp)}
+              title="Ajuda"
+            >
+              ❓ Como Usar
+            </button>
+          </div>
         </div>
       </header>
 
-      <div className="instructions-bar">
-        <div className="instruction-item">
-          <span className="icon">🖱️</span>
-          <span>Clique para editar</span>
-        </div>
-        <div className="instruction-item">
-          <span className="icon">🎯</span>
-          <span>Arraste o quadrado verde para preencher</span>
-        </div>
-        <div className="instruction-item">
-          <span className="icon">📝</span>
-          <span>Duplo clique para observações</span>
-        </div>
-        <div className="instruction-item">
-          <span className="icon">⋮⋮</span>
-          <span>Arraste para reordenar</span>
-        </div>
-      </div>
+      <SituacaoSelector value={situacao} onChange={setSituacao} />
 
       <main className="grid-container">
-        <EscalaGrid />
+        <EscalaGrid situacao={situacao} />
       </main>
+
+      {showHelp && <HelpPanel onClose={() => setShowHelp(false)} />}
 
       <footer className="app-footer">
         <div className="footer-content">
           <div className="footer-left">
             <span className="made-with">
-              Feito com <span className="heart">❤️</span> por
+              Feito com <span className="heart">❤️</span>
             </span>
             <span className="developer">
-              <strong>Moises Amaral</strong>
+              por <strong>Moises Amaral</strong>
             </span>
-            <span className="tech-stack">
-              Desenvolvedor Fullstack • JavaScript & .NET C#
-            </span>
+            <span className="tech-stack">JavaScript & .NET C#</span>
           </div>
 
           <div className="footer-right">
-            <span className="copyright">
-              © {currentYear} Todos os direitos reservados
-            </span>
+            <span className="copyright">© 2026 Sistema de Escala de Voo</span>
           </div>
         </div>
       </footer>

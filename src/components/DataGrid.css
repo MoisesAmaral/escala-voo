@@ -1,246 +1,32 @@
+/* ==================== CONTAINER ==================== */
+
 .data-grid-container {
   width: 100%;
-  height: 100%;
-  overflow: auto;
+  height: auto;
+  min-height: fit-content;
   position: relative;
+  overflow: visible;
   background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.05),
+    0 1px 2px rgba(0, 0, 0, 0.03);
 }
 
 .data-grid-wrapper {
-  min-width: 100%;
-  position: relative;
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: visible;
+  border-radius: 12px;
 }
+
+/* ==================== TABLE ==================== */
 
 .data-grid {
   width: 100%;
-  border-collapse: collapse;
-  font-family:
-    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  font-size: 13px;
-  user-select: none;
-}
-
-/* HEADER */
-.data-grid thead th {
-  background: #c8e6dc;
-  color: #020805;
-  font-weight: 600;
-  padding: 12px 8px;
-  text-align: center;
-  border-bottom: 2px solid #a3c4b8;
-  border-right: 1px solid rgba(255, 255, 255, 0.3);
-  position: sticky;
-  top: 0;
-  z-index: 10;
-}
-
-/* CÉLULAS */
-.data-grid tbody td {
-  padding: 0;
-  text-align: center;
-  border-right: 1px solid #e8f0ec;
-  border-bottom: 1px solid #e8f0ec;
-  position: relative;
-  cursor: pointer;
-  transition: background-color 0.1s;
-}
-
-.data-grid tbody td.editable:hover {
-  background-color: #f0f5f3;
-}
-
-/* CÉLULA SELECIONADA */
-.data-grid tbody td.selected {
-  border: 2px solid #2e6b50 !important;
-  background-color: #e8f4ef;
-  z-index: 2;
-}
-
-/* RANGE DE FILL */
-.data-grid tbody td.fill-range {
-  background-color: rgba(46, 107, 80, 0.1);
-  border: 1px dashed #2e6b50;
-}
-
-/* FILL HANDLE (QUADRADINHO VERDE) */
-.fill-handle {
-  position: absolute;
-  bottom: -1px;
-  right: -1px;
-  width: 8px;
-  height: 8px;
-  background-color: #2e6b50;
-  border: 2px solid #ffffff;
-  cursor: crosshair;
-  z-index: 5;
-}
-
-.fill-handle:hover {
-  transform: scale(1.3);
-  background-color: #1f5039;
-}
-
-/* EDITOR SELECT */
-.cell-editor-select {
-  width: 100%;
-  height: 100%;
-  border: 2px solid #2e6b50;
-  background: white;
-  font-size: 13px;
-  padding: 4px;
-  outline: none;
-}
-
-.cell-editor-input {
-  width: 100%;
-  height: 100%;
-  border: 2px solid #2e6b50;
-  background: white;
-  font-size: 13px;
-  padding: 4px;
-  outline: none;
-}
-
-/* PINNED COLUMNS */
-.data-grid th.pinned-left,
-.data-grid td.pinned-left {
-  position: sticky;
-  left: 0;
-  z-index: 5;
-  background: inherit;
-}
-
-.data-grid th.pinned-left {
-  z-index: 15;
-}
-
-/* SCROLLBAR CUSTOMIZADO */
-.data-grid-container::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
-}
-
-.data-grid-container::-webkit-scrollbar-track {
-  background: #f0f5f3;
-}
-
-.data-grid-container::-webkit-scrollbar-thumb {
-  background: #c8e6dc;
-  border-radius: 5px;
-}
-
-.data-grid-container::-webkit-scrollbar-thumb:hover {
-  background: #a3c4b8;
-}
-
-/* ==================== ROW DRAG ==================== */
-
-.drag-handle-header {
-  background: #c8e6dc !important;
-  color: #7a8c85;
-  font-weight: 400;
-  cursor: grab;
-  user-select: none;
-}
-
-.drag-handle-cell {
-  background: #f9fafb;
-  cursor: grab;
-  text-align: center;
-  color: #a3b5ad;
-  border-right: 1px solid #e8f0ec;
-  user-select: none;
-  position: sticky;
-  left: 0;
-  z-index: 5;
-}
-
-.drag-handle-icon {
-  font-size: 16px;
-  line-height: 1;
-  font-weight: bold;
-  letter-spacing: -2px;
-}
-
-.drag-handle-cell:hover {
-  background: #e8f0ec;
-  color: #2e6b50;
-}
-
-.drag-handle-cell:active {
-  cursor: grabbing;
-}
-
-/* Linha sendo arrastada */
-.data-grid tbody tr.dragging {
-  opacity: 0.5;
-  background: #f0f5f3;
-}
-
-/* Linha onde vai soltar */
-.data-grid tbody tr.drag-over {
-  border-top: 3px solid #2e6b50;
-  background: rgba(46, 107, 80, 0.05);
-}
-
-/* Previne seleção de texto durante drag */
-.data-grid tbody tr[draggable="true"] {
-  user-select: none;
-}
-
-/* ==================== OTIMIZAÇÕES VISUAIS ==================== */
-
-.data-grid thead th {
-  font-size: 12px;
-  padding: 10px 4px;
-}
-
-.data-grid tbody td {
-  font-size: 12px;
-  padding: 4px;
-}
-
-/* Grid mais compacto */
-.escala-grid .data-grid tbody td {
-  min-width: 42px;
-}
-
-/* Drag handle mais estreito */
-.drag-handle-cell {
-  width: 35px !important;
-  min-width: 35px !important;
-}
-
-/* Células vazias têm visual diferente */
-.data-grid tbody td.editable:empty::after {
-  content: "·";
-  color: #d1d5db;
-  font-size: 20px;
-}
-
-/* Cursor diferente para células vazias vs preenchidas */
-.data-grid tbody td.editable:not(:empty) {
-  cursor: pointer;
-}
-
-.data-grid tbody td.editable:empty {
-  cursor: cell;
-}
-
-/* ==================== TOOLTIP CUSTOMIZADO ==================== */
-
-.custom-tooltip {
-  background: #1f2937;
-  color: #ffffff;
-  padding: 8px 12px;
-  border-radius: 6px;
-  font-size: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  pointer-events: none;
-  white-space: pre-wrap;
-  max-width: 300px;
-  word-wrap: break-word;
-  animation: tooltipFadeIn 0.2s ease-out;
+  border-collapse: separate;
+  border-spacing: 0;
   font-family:
     "Poppins",
     -apple-system,
@@ -248,6 +34,377 @@
     "Segoe UI",
     Roboto,
     sans-serif;
+  table-layout: auto;
+}
+
+/* ==================== HEADER ==================== */
+
+.data-grid thead th {
+  background: linear-gradient(180deg, #d4ebe3 0%, #c8e6dc 100%);
+  color: #0d4a35;
+  font-weight: 600;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 12px 6px;
+  text-align: center;
+  border-bottom: 2px solid #a3c4b8;
+  border-right: 1px solid #b8d9ce;
+  white-space: nowrap;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  box-shadow: 0 2px 4px rgba(46, 107, 80, 0.08);
+}
+
+.data-grid thead th:first-child {
+  border-top-left-radius: 12px;
+}
+
+.data-grid thead th:last-child {
+  border-top-right-radius: 12px;
+  border-right: none;
+}
+
+/* ==================== BODY ==================== */
+
+.data-grid tbody td {
+  font-size: 12px;
+  font-weight: 500;
+  padding: 10px 6px;
+  border-bottom: 1px solid #f0f0f0;
+  border-right: 1px solid #f5f5f5;
+  text-align: center;
+  background: #ffffff;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-sizing: border-box;
+  color: #374151;
+}
+
+.data-grid tbody td:last-child {
+  border-right: none;
+}
+
+.data-grid tbody tr {
+  height: 42px;
+  transition: all 0.15s ease;
+}
+
+.data-grid tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.data-grid tbody tr:last-child td:first-child {
+  border-bottom-left-radius: 12px;
+}
+
+.data-grid tbody tr:last-child td:last-child {
+  border-bottom-right-radius: 12px;
+}
+
+/* Hover State */
+.data-grid tbody tr:hover {
+  background-color: #f8fdfb;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(46, 107, 80, 0.06);
+}
+
+.data-grid tbody tr:hover td {
+  background-color: #f8fdfb;
+  border-color: #e8f4ef;
+}
+
+/* ==================== COLUNAS FIXAS (PINNED) ==================== */
+
+.data-grid th.pinned-left,
+.data-grid td.pinned-left {
+  position: sticky;
+  left: 0;
+  z-index: 5;
+  background: inherit;
+  box-shadow:
+    3px 0 8px rgba(0, 0, 0, 0.04),
+    2px 0 4px rgba(0, 0, 0, 0.02);
+  border-right: 2px solid #e0e0e0;
+}
+
+.data-grid th.pinned-left {
+  z-index: 15;
+  background: linear-gradient(180deg, #d4ebe3 0%, #c8e6dc 100%);
+}
+
+.data-grid td.pinned-left {
+  background: #ffffff;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.data-grid tbody tr:hover td.pinned-left {
+  background: #f8fdfb;
+}
+
+.data-grid tbody tr:nth-child(even) td.pinned-left {
+  background: #fafafa;
+}
+
+.data-grid tbody tr:nth-child(even):hover td.pinned-left {
+  background: #f8fdfb;
+}
+
+/* ==================== DRAG HANDLE ==================== */
+
+.drag-handle-cell,
+.drag-handle-header {
+  position: sticky;
+  left: 0;
+  z-index: 6;
+  background: #f9fafb;
+  width: 40px;
+  min-width: 40px;
+  cursor: grab;
+  border-right: 2px solid #e5e7eb;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.drag-handle-cell:active {
+  cursor: grabbing;
+}
+
+.drag-handle-header {
+  z-index: 16;
+  background: linear-gradient(180deg, #d4ebe3 0%, #c8e6dc 100%);
+  font-size: 16px;
+  color: #6b7280;
+}
+
+.drag-handle-cell:hover {
+  background: #f0f5f3;
+  color: #2e6b50;
+}
+
+/* ==================== HOVER E SELEÇÃO ==================== */
+
+.data-grid tbody td.editable {
+  cursor: pointer;
+  position: relative;
+}
+
+.data-grid tbody td.editable::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 0 6px 6px 0;
+  border-color: transparent #2e6b50 transparent transparent;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.data-grid tbody td.editable:hover {
+  background-color: #e8f4ef;
+  box-shadow: inset 0 0 0 1px #c8e6dc;
+}
+
+.data-grid tbody td.editable:hover::after {
+  opacity: 0.3;
+}
+
+/* Célula Selecionada */
+.data-grid tbody td.selected {
+  background: linear-gradient(135deg, #e8f4ef 0%, #f0f9f5 100%);
+  box-shadow: inset 0 0 0 2px #2e6b50;
+  position: relative;
+  z-index: 3;
+  font-weight: 600;
+  color: #0d4a35;
+}
+
+.data-grid tbody td.selected::after {
+  opacity: 1 !important;
+}
+
+.data-grid tbody tr:hover td.selected {
+  background: linear-gradient(135deg, #e8f4ef 0%, #f0f9f5 100%);
+}
+
+/* ==================== ALTERNÂNCIA DE LINHAS ==================== */
+
+.data-grid tbody tr:nth-child(even) td {
+  background-color: #fafafa;
+}
+
+.data-grid tbody tr:nth-child(even):hover td {
+  background-color: #f8fdfb;
+}
+
+/* ==================== FILL HANDLE ==================== */
+
+.fill-handle {
+  position: absolute;
+  bottom: -5px;
+  right: -5px;
+  width: 10px;
+  height: 10px;
+  background: linear-gradient(135deg, #2e6b50 0%, #1f5039 100%);
+  border: 2px solid #ffffff;
+  border-radius: 3px;
+  cursor: crosshair;
+  z-index: 100;
+  box-shadow:
+    0 2px 4px rgba(46, 107, 80, 0.3),
+    0 1px 2px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.fill-handle:hover {
+  background: linear-gradient(135deg, #1f5039 0%, #0f3020 100%);
+  transform: scale(1.4);
+  box-shadow:
+    0 4px 8px rgba(46, 107, 80, 0.4),
+    0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.fill-handle:active {
+  transform: scale(1.2);
+}
+
+/* Range de Preenchimento */
+.data-grid tbody td.fill-range {
+  background: linear-gradient(
+    135deg,
+    rgba(46, 107, 80, 0.08) 0%,
+    rgba(46, 107, 80, 0.12) 100%
+  );
+  box-shadow: inset 0 0 0 2px rgba(46, 107, 80, 0.3);
+  position: relative;
+  animation: fillPulse 0.6s ease-in-out;
+}
+
+@keyframes fillPulse {
+  0%,
+  100% {
+    background: linear-gradient(
+      135deg,
+      rgba(46, 107, 80, 0.08) 0%,
+      rgba(46, 107, 80, 0.12) 100%
+    );
+  }
+  50% {
+    background: linear-gradient(
+      135deg,
+      rgba(46, 107, 80, 0.12) 0%,
+      rgba(46, 107, 80, 0.18) 100%
+    );
+  }
+}
+
+/* ==================== DRAG AND DROP ==================== */
+
+.data-grid tbody tr.dragging {
+  opacity: 0.6;
+  background: #e8f4ef;
+  box-shadow:
+    0 8px 24px rgba(46, 107, 80, 0.2),
+    0 4px 8px rgba(0, 0, 0, 0.1);
+  transform: scale(1.02);
+}
+
+.data-grid tbody tr.dragging td {
+  background: #e8f4ef;
+  border-color: #c8e6dc;
+}
+
+.data-grid tbody tr.drag-over {
+  position: relative;
+  animation: dragOverPulse 0.5s ease-in-out infinite;
+}
+
+.data-grid tbody tr.drag-over::before {
+  content: "";
+  position: absolute;
+  top: -2px;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #2e6b50 0%, #1f5039 50%, #2e6b50 100%);
+  border-radius: 2px;
+  box-shadow: 0 2px 8px rgba(46, 107, 80, 0.4);
+  z-index: 10;
+}
+
+@keyframes dragOverPulse {
+  0%,
+  100% {
+    background: rgba(46, 107, 80, 0.06);
+  }
+  50% {
+    background: rgba(46, 107, 80, 0.12);
+  }
+}
+
+/* ==================== EDITORES ==================== */
+
+.cell-editor-select,
+.cell-editor-input {
+  width: 100%;
+  border: 2px solid #2e6b50;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 12px;
+  font-family: "Poppins", sans-serif;
+  font-weight: 500;
+  background: #ffffff;
+  box-sizing: border-box;
+  color: #1f2937;
+  transition: all 0.2s ease;
+  box-shadow:
+    0 2px 4px rgba(46, 107, 80, 0.1),
+    0 0 0 4px rgba(46, 107, 80, 0.05);
+}
+
+.cell-editor-select:focus,
+.cell-editor-input:focus {
+  outline: none;
+  border-color: #1f5039;
+  box-shadow:
+    0 4px 12px rgba(46, 107, 80, 0.15),
+    0 0 0 4px rgba(46, 107, 80, 0.1);
+  transform: translateY(-1px);
+}
+
+.cell-editor-select {
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%232e6b50' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  padding-right: 30px;
+}
+
+/* ==================== TOOLTIP ==================== */
+
+.custom-tooltip {
+  position: fixed;
+  background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+  color: #ffffff;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  box-shadow:
+    0 8px 24px rgba(0, 0, 0, 0.4),
+    0 4px 8px rgba(0, 0, 0, 0.2),
+    0 0 0 1px rgba(255, 255, 255, 0.1);
+  pointer-events: none;
+  white-space: pre-wrap;
+  max-width: 320px;
+  z-index: 9999;
+  animation: tooltipFadeIn 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(8px);
 }
 
 .custom-tooltip::before {
@@ -258,18 +415,122 @@
   transform: translateX(-50%);
   width: 0;
   height: 0;
-  border-left: 6px solid transparent;
-  border-right: 6px solid transparent;
-  border-top: 6px solid #1f2937;
+  border-style: solid;
+  border-width: 6px 6px 0 6px;
+  border-color: #1f2937 transparent transparent transparent;
 }
 
 @keyframes tooltipFadeIn {
   from {
     opacity: 0;
-    transform: translate(-50%, -95%);
+    transform: translate(-50%, -90%);
   }
   to {
     opacity: 1;
     transform: translate(-50%, -100%);
+  }
+}
+
+/* ==================== SCROLLBAR ==================== */
+
+.data-grid-wrapper::-webkit-scrollbar {
+  height: 10px;
+}
+
+.data-grid-wrapper::-webkit-scrollbar-track {
+  background: #f0f5f3;
+  border-radius: 5px;
+  margin: 0 12px;
+}
+
+.data-grid-wrapper::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #c8e6dc 0%, #a3c4b8 100%);
+  border-radius: 5px;
+  border: 2px solid #f0f5f3;
+  transition: background 0.2s ease;
+}
+
+.data-grid-wrapper::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #a3c4b8 0%, #8fb4a4 100%);
+  box-shadow: 0 2px 4px rgba(46, 107, 80, 0.2);
+}
+
+.data-grid-wrapper::-webkit-scrollbar-thumb:active {
+  background: linear-gradient(180deg, #8fb4a4 0%, #7ba190 100%);
+}
+
+/* ==================== ANIMAÇÕES E TRANSIÇÕES ==================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .data-grid tbody td,
+  .data-grid tbody tr,
+  .fill-handle,
+  .cell-editor-select,
+  .cell-editor-input,
+  .custom-tooltip {
+    transition: none;
+    animation: none;
+  }
+}
+
+/* ==================== ESTADOS DE LOADING ==================== */
+
+.data-grid.loading {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.data-grid.loading tbody tr {
+  animation: skeletonPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes skeletonPulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* ==================== RESPONSIVIDADE ==================== */
+
+@media (max-width: 768px) {
+  .data-grid thead th {
+    font-size: 10px;
+    padding: 8px 4px;
+  }
+
+  .data-grid tbody td {
+    font-size: 11px;
+    padding: 8px 4px;
+  }
+
+  .drag-handle-cell,
+  .drag-handle-header {
+    width: 32px;
+    min-width: 32px;
+  }
+}
+
+/* ==================== PRINT STYLES ==================== */
+
+@media print {
+  .data-grid-container {
+    border: none;
+    box-shadow: none;
+  }
+
+  .fill-handle,
+  .drag-handle-cell,
+  .drag-handle-header {
+    display: none;
+  }
+
+  .data-grid tbody tr:hover {
+    background-color: transparent;
+    transform: none;
+    box-shadow: none;
   }
 }

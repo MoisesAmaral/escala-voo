@@ -1,0 +1,176 @@
+.aeronave-section {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  margin-bottom: 16px;
+  overflow: visible;
+  transition: box-shadow 0.2s;
+}
+
+.aeronave-section:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* ==================== HEADER ==================== */
+
+.aeronave-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  cursor: pointer;
+  background: linear-gradient(to right, #f9fafb, #ffffff);
+  border-bottom: 1px solid transparent;
+  transition: all 0.2s;
+  border-radius: 12px 12px 0 0;
+}
+
+.aeronave-header:hover {
+  background: linear-gradient(to right, #f0f5f3, #f9fafb);
+}
+
+.aeronave-header.expanded {
+  border-bottom-color: #e5e7eb;
+  background: linear-gradient(to right, #e8f4ef, #f0f5f3);
+}
+
+/* ==================== INFO ==================== */
+
+.aeronave-info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.aeronave-icon {
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, #2e6b50 0%, #1f5039 100%);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  box-shadow: 0 2px 8px rgba(46, 107, 80, 0.2);
+}
+
+.aeronave-details h3 {
+  margin: 0;
+  font-family: "Poppins", sans-serif;
+  font-size: 18px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.aeronave-descricao {
+  font-family: "Poppins", sans-serif;
+  font-size: 13px;
+  font-weight: 400;
+  color: #6b7280;
+}
+
+/* ==================== META ==================== */
+
+.aeronave-meta {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.tripulantes-count {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: #f3f4f6;
+  border-radius: 8px;
+}
+
+.count-badge {
+  font-family: "Poppins", sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: #2e6b50;
+}
+
+.count-label {
+  font-family: "Poppins", sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  color: #6b7280;
+}
+
+.status-badge {
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-family: "Poppins", sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.collapse-btn {
+  width: 40px;
+  height: 40px;
+  background: #f3f4f6;
+  border: none;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: #6b7280;
+}
+
+.collapse-btn:hover {
+  background: #e5e7eb;
+  color: #2e6b50;
+}
+
+/* ==================== CONTENT ==================== */
+
+.aeronave-content {
+  padding: 16px;
+  background: #fafafa;
+  border-radius: 0 0 12px 12px;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.aeronave-content > div {
+  width: 100%;
+  min-height: fit-content;
+  height: auto;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ==================== RESPONSIVE ==================== */
+
+@media (max-width: 768px) {
+  .aeronave-header {
+    flex-direction: column;
+    gap: 16px;
+    padding: 16px;
+  }
+
+  .aeronave-meta {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .aeronave-info {
+    width: 100%;
+  }
+}

@@ -1,218 +1,522 @@
-/* ==================== ESCALA GRID ESPECÍFICO ==================== */
+/* ==================== ESCALA GRID - CUSTOMIZAÇÕES ESPECÍFICAS ==================== */
 
 .escala-grid {
   font-family:
-    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    "Poppins",
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    sans-serif;
 }
 
-/* Sobrescrever cores específicas para escala */
-.escala-grid .data-grid thead th {
-  background: #c8e6dc;
-  color: #020805;
+/* ==================== HEADER COMPACTO ==================== */
+
+.data-grid thead th {
+  background: linear-gradient(180deg, #d4ebe3 0%, #c8e6dc 100%);
+  color: #0d4a35;
   font-weight: 600;
-  font-size: 13px;
-}
-
-.escala-grid .data-grid tbody td {
-  font-size: 12px;
-}
-
-/* Colunas de dias mais estreitas */
-.escala-grid .data-grid tbody td {
-  min-width: 45px;
-}
-
-/* Hover nas células editáveis */
-.escala-grid .data-grid tbody td.editable:hover {
-  background-color: #dce7e3;
-}
-
-/* Células selecionadas com cor da marca */
-.escala-grid .data-grid tbody td.selected {
-  border: 2px solid #2e6b50 !important;
-  background-color: #e8f4ef;
-}
-
-/* Fill handle verde escuro */
-.escala-grid .fill-handle {
-  background-color: #2e6b50;
-  border: 2px solid #ffffff;
-}
-
-.escala-grid .fill-handle:hover {
-  background-color: #1f5039;
-}
-
-/* Range de preenchimento */
-.escala-grid .data-grid tbody td.fill-range {
-  background-color: rgba(46, 107, 80, 0.12);
-  border: 1px dashed #2e6b50;
-}
-
-/* Editor select customizado */
-.escala-grid .cell-editor-select {
-  border: 2px solid #2e6b50;
-  border-radius: 4px;
-  padding: 6px 8px;
-  font-size: 13px;
-  font-family: inherit;
-}
-
-.escala-grid .cell-editor-select:focus {
-  outline: none;
-  border-color: #1f5039;
-  box-shadow: 0 0 0 3px rgba(46, 107, 80, 0.1);
-}
-
-/* Drag handle personalizado */
-.escala-grid .drag-handle-cell {
-  background: #f9fafb;
-  border-right: 2px solid #e8f0ec;
-}
-
-.escala-grid .drag-handle-cell:hover {
-  background: #e8f0ec;
-  color: #2e6b50;
-}
-
-/* Linha sendo arrastada */
-.escala-grid .data-grid tbody tr.dragging {
-  opacity: 0.5;
-  background: #f0f5f3;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-/* Linha onde vai soltar */
-.escala-grid .data-grid tbody tr.drag-over {
-  border-top: 3px solid #2e6b50;
-  background: rgba(46, 107, 80, 0.08);
-}
-
-/* Tooltip customizado (se necessário) */
-.escala-grid [title]:hover::after {
-  content: attr(title);
-  position: absolute;
-  background: #2c3e50;
-  color: white;
-  padding: 6px 10px;
-  border-radius: 4px;
-  font-size: 12px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 4px 4px; /* ← REDUZIDO de 12px para 6px */
+  text-align: center;
+  border-bottom: 2px solid #a3c4b8;
+  border-right: 1px solid #b8d9ce;
   white-space: nowrap;
-  z-index: 1000;
-  bottom: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  margin-bottom: 5px;
-}
-
-/* Células com observação - ícone mais visível */
-.escala-grid .data-grid tbody td [data-has-obs="true"] {
-  position: relative;
-}
-
-.escala-grid .data-grid tbody td [data-has-obs="true"]::after {
-  content: "📝";
-  position: absolute;
-  top: 2px;
-  right: 2px;
-  font-size: 10px;
-  opacity: 0.7;
-}
-
-/* Responsivo - scroll horizontal suave */
-.escala-grid .data-grid-container {
-  overflow-x: auto;
-  overflow-y: auto;
-}
-
-/* Scrollbar customizado para escala */
-.escala-grid .data-grid-container::-webkit-scrollbar {
-  width: 12px;
-  height: 12px;
-}
-
-.escala-grid .data-grid-container::-webkit-scrollbar-track {
-  background: #f0f5f3;
-  border-radius: 6px;
-}
-
-.escala-grid .data-grid-container::-webkit-scrollbar-thumb {
-  background: #c8e6dc;
-  border-radius: 6px;
-  border: 2px solid #f0f5f3;
-}
-
-.escala-grid .data-grid-container::-webkit-scrollbar-thumb:hover {
-  background: #a3c4b8;
-}
-
-/* Transições suaves */
-.escala-grid .data-grid tbody td {
-  transition:
-    background-color 0.15s ease,
-    border-color 0.15s ease;
-}
-
-/* Header fixo ao rolar */
-.escala-grid .data-grid thead th {
   position: sticky;
   top: 0;
   z-index: 10;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 4px rgba(46, 107, 80, 0.08);
 }
 
-/* Colunas fixas (Piloto, %, Função) */
+/* ==================== CÉLULAS DE DADOS ==================== */
+
+.escala-grid .data-grid tbody td {
+  font-size: 12px;
+  font-weight: 500;
+  min-width: 42px;
+  padding: 9px 5px;
+  color: #1f2937;
+}
+
+/* ==================== HOVER APRIMORADO ==================== */
+
+.escala-grid .data-grid tbody tr:hover {
+  background: linear-gradient(90deg, #f8fdfb 0%, #f0f9f5 100%);
+  box-shadow:
+    0 2px 8px rgba(46, 107, 80, 0.08),
+    inset 0 0 0 1px rgba(46, 107, 80, 0.05);
+}
+
+.escala-grid .data-grid tbody tr:hover td {
+  background: transparent;
+  border-color: #e0f2ea;
+}
+
+.escala-grid .data-grid tbody td.editable:hover {
+  background: linear-gradient(135deg, #e8f4ef 0%, #dceee6 100%);
+  box-shadow: inset 0 0 0 1px rgba(46, 107, 80, 0.2);
+  transform: scale(1.02);
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ==================== SELEÇÃO REFINADA ==================== */
+
+.escala-grid .data-grid tbody td.selected {
+  background: linear-gradient(135deg, #d4ebe3 0%, #e8f4ef 100%) !important;
+  box-shadow:
+    inset 0 0 0 2px #2e6b50,
+    0 0 0 1px rgba(46, 107, 80, 0.1),
+    0 2px 8px rgba(46, 107, 80, 0.15) !important;
+  font-weight: 600;
+  color: #0d4a35;
+  position: relative;
+  z-index: 3;
+}
+
+.escala-grid .data-grid tbody td.selected::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 0 8px 8px 0;
+  border-color: transparent #2e6b50 transparent transparent;
+  opacity: 0.8;
+}
+
+/* ==================== FILL HANDLE PREMIUM ==================== */
+
+.escala-grid .fill-handle {
+  width: 11px;
+  height: 11px;
+  background: linear-gradient(135deg, #2e6b50 0%, #1f5039 100%);
+  border: 2.5px solid #ffffff;
+  border-radius: 3px;
+  box-shadow:
+    0 3px 6px rgba(46, 107, 80, 0.35),
+    0 1px 3px rgba(0, 0, 0, 0.25),
+    inset 0 1px 1px rgba(255, 255, 255, 0.3);
+  cursor: crosshair;
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.escala-grid .fill-handle:hover {
+  background: linear-gradient(135deg, #1f5039 0%, #0f3020 100%);
+  transform: scale(1.5) rotate(45deg);
+  box-shadow:
+    0 4px 12px rgba(46, 107, 80, 0.5),
+    0 2px 6px rgba(0, 0, 0, 0.3),
+    inset 0 1px 2px rgba(255, 255, 255, 0.4);
+}
+
+.escala-grid .fill-handle:active {
+  transform: scale(1.3) rotate(45deg);
+}
+
+/* ==================== RANGE DE PREENCHIMENTO ==================== */
+
+.escala-grid .data-grid tbody td.fill-range {
+  background: linear-gradient(
+    135deg,
+    rgba(46, 107, 80, 0.12) 0%,
+    rgba(46, 107, 80, 0.08) 100%
+  );
+  box-shadow:
+    inset 0 0 0 2px rgba(46, 107, 80, 0.35),
+    inset 0 2px 4px rgba(46, 107, 80, 0.08);
+  position: relative;
+  animation: fillRangePulse 0.8s ease-in-out infinite;
+}
+
+.escala-grid .data-grid tbody td.fill-range::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 4px,
+    rgba(46, 107, 80, 0.05) 4px,
+    rgba(46, 107, 80, 0.05) 8px
+  );
+  pointer-events: none;
+}
+
+@keyframes fillRangePulse {
+  0%,
+  100% {
+    background: linear-gradient(
+      135deg,
+      rgba(46, 107, 80, 0.12) 0%,
+      rgba(46, 107, 80, 0.08) 100%
+    );
+  }
+  50% {
+    background: linear-gradient(
+      135deg,
+      rgba(46, 107, 80, 0.18) 0%,
+      rgba(46, 107, 80, 0.14) 100%
+    );
+  }
+}
+
+/* ==================== EDITOR CUSTOMIZADO ==================== */
+
+.escala-grid .cell-editor-select,
+.escala-grid .cell-editor-input {
+  border: 2px solid #2e6b50;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-family: "Poppins", sans-serif;
+  font-weight: 600;
+  color: #0d4a35;
+  background: linear-gradient(180deg, #ffffff 0%, #f9fdfb 100%);
+  box-shadow:
+    0 4px 12px rgba(46, 107, 80, 0.12),
+    0 0 0 4px rgba(46, 107, 80, 0.06),
+    inset 0 1px 2px rgba(255, 255, 255, 0.8);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.escala-grid .cell-editor-select:focus,
+.escala-grid .cell-editor-input:focus {
+  border-color: #1f5039;
+  box-shadow:
+    0 6px 20px rgba(46, 107, 80, 0.2),
+    0 0 0 4px rgba(46, 107, 80, 0.12),
+    inset 0 1px 3px rgba(255, 255, 255, 0.9);
+  transform: translateY(-2px);
+}
+
+.escala-grid .cell-editor-select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 14 14'%3E%3Cpath fill='%232e6b50' d='M7 10L2 4h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  padding-right: 36px;
+  cursor: pointer;
+}
+
+.escala-grid .cell-editor-select:hover {
+  background-color: #f0f9f5;
+}
+
+/* ==================== DRAG HANDLE APRIMORADO ==================== */
+
+.escala-grid .drag-handle-cell {
+  background: linear-gradient(180deg, #f9fafb 0%, #f3f4f6 100%);
+  border-right: 2px solid #e0f2ea;
+  cursor: grab;
+  transition: all 0.2s ease;
+  font-size: 16px;
+  color: #9ca3af;
+}
+
+.escala-grid .drag-handle-cell:hover {
+  background: linear-gradient(180deg, #e8f4ef 0%, #dceee6 100%);
+  color: #2e6b50;
+  box-shadow:
+    inset 0 0 0 1px rgba(46, 107, 80, 0.1),
+    2px 0 6px rgba(46, 107, 80, 0.08);
+}
+
+.escala-grid .drag-handle-cell:active {
+  cursor: grabbing;
+  background: linear-gradient(180deg, #d4ebe3 0%, #c8e6dc 100%);
+  box-shadow:
+    inset 0 2px 4px rgba(46, 107, 80, 0.15),
+    2px 0 4px rgba(46, 107, 80, 0.12);
+}
+
+/* ==================== DRAG AND DROP REFINADO ==================== */
+
+.escala-grid .data-grid tbody tr.dragging {
+  opacity: 0.7;
+  background: linear-gradient(90deg, #e8f4ef 0%, #d4ebe3 100%);
+  box-shadow:
+    0 12px 32px rgba(46, 107, 80, 0.25),
+    0 6px 16px rgba(0, 0, 0, 0.15),
+    inset 0 1px 2px rgba(255, 255, 255, 0.5);
+  transform: scale(1.03) rotate(1deg);
+  border-radius: 6px;
+}
+
+.escala-grid .data-grid tbody tr.dragging td {
+  background: transparent;
+  border-color: rgba(46, 107, 80, 0.2);
+}
+
+.escala-grid .data-grid tbody tr.drag-over {
+  position: relative;
+  animation: dragOverGlow 0.6s ease-in-out infinite;
+}
+
+.escala-grid .data-grid tbody tr.drag-over::before {
+  content: "";
+  position: absolute;
+  top: -3px;
+  left: -2px;
+  right: -2px;
+  height: 5px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    #2e6b50 20%,
+    #1f5039 50%,
+    #2e6b50 80%,
+    transparent 100%
+  );
+  border-radius: 3px;
+  box-shadow:
+    0 3px 10px rgba(46, 107, 80, 0.5),
+    0 0 20px rgba(46, 107, 80, 0.3);
+  z-index: 10;
+  animation: dragOverSlide 1s linear infinite;
+}
+
+@keyframes dragOverGlow {
+  0%,
+  100% {
+    background: rgba(46, 107, 80, 0.08);
+  }
+  50% {
+    background: rgba(46, 107, 80, 0.15);
+  }
+}
+
+@keyframes dragOverSlide {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 40px 0;
+  }
+}
+
+/* ==================== COLUNAS FIXAS APRIMORADAS ==================== */
+
 .escala-grid .data-grid td.pinned-left,
 .escala-grid .data-grid th.pinned-left {
   position: sticky;
   left: 0;
   z-index: 5;
   background: inherit;
-  box-shadow: 2px 0 4px rgba(0, 0, 0, 0.05);
+  box-shadow:
+    3px 0 10px rgba(46, 107, 80, 0.08),
+    2px 0 6px rgba(0, 0, 0, 0.03),
+    inset -1px 0 0 rgba(46, 107, 80, 0.1);
+  border-right: 2px solid #d4ebe3;
 }
 
 .escala-grid .data-grid th.pinned-left {
   z-index: 15;
+  background: linear-gradient(180deg, #d4ebe3 0%, #c0dfd3 100%);
+  box-shadow:
+    3px 0 10px rgba(46, 107, 80, 0.12),
+    2px 0 6px rgba(0, 0, 0, 0.05),
+    0 2px 6px rgba(46, 107, 80, 0.12),
+    inset -1px 0 0 rgba(46, 107, 80, 0.15);
 }
 
-/* Ajuste para drag handle quando tem pinned left */
+.escala-grid .data-grid td.pinned-left {
+  font-weight: 600;
+  color: #0d4a35;
+}
+
 .escala-grid .drag-handle-cell {
-  position: sticky;
-  left: 0;
   z-index: 6;
+  left: 0;
+  position: sticky;
 }
 
-/* Linhas alternadas (zebra) - opcional */
+/* ==================== LINHAS ALTERNADAS (ZEBRA) ==================== */
+
 .escala-grid .data-grid tbody tr:nth-child(even) {
-  background-color: #fafcfb;
+  background: linear-gradient(90deg, #fafcfb 0%, #f8faf9 100%);
 }
 
-.escala-grid .data-grid tbody tr:hover {
-  background-color: #f0f5f3;
+.escala-grid .data-grid tbody tr:nth-child(even) td {
+  background: transparent;
 }
 
-/* Prevenir seleção de texto durante interações */
-.escala-grid .data-grid {
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
+.escala-grid .data-grid tbody tr:nth-child(even):hover {
+  background: linear-gradient(90deg, #f0f9f5 0%, #e8f4ef 100%);
 }
 
-/* Permitir seleção dentro de inputs */
-.escala-grid .cell-editor-select,
-.escala-grid .cell-editor-input {
-  -webkit-user-select: text;
-  -moz-user-select: text;
-  -ms-user-select: text;
-  user-select: text;
+/* ==================== TOOLTIP COM OBSERVAÇÃO ==================== */
+
+.escala-grid .custom-tooltip {
+  background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow:
+    0 12px 32px rgba(0, 0, 0, 0.5),
+    0 6px 16px rgba(0, 0, 0, 0.3),
+    inset 0 1px 2px rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(12px);
+  font-weight: 500;
+  letter-spacing: 0.3px;
 }
 
-/* Performance: GPU acceleration */
+/* ==================== SCROLLBAR PREMIUM ==================== */
+
+.escala-grid .data-grid-container::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+.escala-grid .data-grid-container::-webkit-scrollbar-track {
+  background: linear-gradient(180deg, #f0f5f3 0%, #e8f0ec 100%);
+  border-radius: 6px;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.escala-grid .data-grid-container::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #c8e6dc 0%, #a3c4b8 100%);
+  border-radius: 6px;
+  border: 2px solid #f0f5f3;
+  box-shadow:
+    inset 0 1px 2px rgba(255, 255, 255, 0.3),
+    0 2px 4px rgba(46, 107, 80, 0.1);
+  transition: all 0.2s ease;
+}
+
+.escala-grid .data-grid-container::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #a3c4b8 0%, #8fb4a4 100%);
+  box-shadow:
+    inset 0 1px 3px rgba(255, 255, 255, 0.4),
+    0 3px 8px rgba(46, 107, 80, 0.2);
+  border-color: #e8f0ec;
+}
+
+.escala-grid .data-grid-container::-webkit-scrollbar-thumb:active {
+  background: linear-gradient(180deg, #8fb4a4 0%, #7ba190 100%);
+  box-shadow:
+    inset 0 2px 4px rgba(0, 0, 0, 0.2),
+    0 1px 3px rgba(46, 107, 80, 0.15);
+}
+
+.escala-grid .data-grid-container::-webkit-scrollbar-corner {
+  background: #f0f5f3;
+}
+
+/* ==================== HEADER FIXO COM SOMBRA ==================== */
+
+.escala-grid .data-grid thead th {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  box-shadow:
+    0 3px 8px rgba(46, 107, 80, 0.12),
+    0 1px 3px rgba(0, 0, 0, 0.05),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.5);
+}
+
+/* ==================== PERFORMANCE OPTIMIZATION ==================== */
+
 .escala-grid .data-grid tbody tr {
   will-change: transform;
+  transform: translateZ(0);
 }
 
 .escala-grid .fill-handle {
   will-change: transform;
+  transform: translateZ(0);
+}
+
+.escala-grid .data-grid tbody td.editable {
+  will-change: background-color, transform;
+}
+
+/* ==================== PREVENÇÃO DE SELEÇÃO ==================== */
+
+.escala-grid .data-grid {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
+}
+
+.escala-grid .cell-editor-select,
+.escala-grid .cell-editor-input {
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  user-select: text;
+}
+
+/* ==================== INDICADOR DE OBSERVAÇÃO ==================== */
+
+.escala-grid .data-grid tbody td:has([data-obs])::after {
+  content: "📝";
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  font-size: 9px;
+  opacity: 0.6;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
+  transition: all 0.2s ease;
+}
+
+.escala-grid .data-grid tbody td:hover::after {
+  opacity: 1;
+  transform: scale(1.2);
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+/* ==================== RESPONSIVIDADE ==================== */
+
+@media (max-width: 768px) {
+  .escala-grid .data-grid tbody td {
+    font-size: 11px;
+    padding: 7px 3px;
+    min-width: 38px;
+  }
+
+  .escala-grid .data-grid thead th {
+    font-size: 10px;
+    padding: 8px 3px;
+  }
+
+  .escala-grid .fill-handle {
+    width: 9px;
+    height: 9px;
+  }
+}
+
+/* ==================== ACESSIBILIDADE ==================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .escala-grid .data-grid tbody td,
+  .escala-grid .fill-handle,
+  .escala-grid .cell-editor-select,
+  .escala-grid .cell-editor-input,
+  .escala-grid .data-grid tbody tr {
+    transition: none;
+    animation: none;
+  }
+}
+
+/* ==================== PRINT STYLES ==================== */
+
+@media print {
+  .escala-grid .fill-handle,
+  .escala-grid .drag-handle-cell {
+    display: none;
+  }
+
+  .escala-grid .data-grid tbody tr:hover {
+    background: transparent;
+    transform: none;
+  }
+
+  .escala-grid .data-grid tbody td.selected {
+    box-shadow: none;
+    border: 1px solid #2e6b50 !important;
+  }
 }

@@ -3,7 +3,7 @@ import "./DataGrid.css";
 
 export interface Column<T> {
   id: string;
-  header: string;
+  header: string | React.ReactNode;
   width?: number;
   minWidth?: number;
   render?: (value: any, row: T, rowIndex: number) => React.ReactNode;
@@ -20,13 +20,21 @@ export interface Column<T> {
     event: React.MouseEvent,
   ) => void;
   pinned?: "left" | "right";
-  getTooltip?: (row: T) => string | null; // ← ADICIONADO
+  getTooltip?: (row: T) => string | null;
+}
+
+export interface ChangeInfo {
+  rowIndex?: number;
+  columnId?: string;
+  oldValue?: any;
+  newValue?: any;
+  isMultiple?: boolean;
 }
 
 export interface DataGridProps<T> {
   columns: Column<T>[];
   data: T[];
-  onDataChange?: (data: T[]) => void;
+  onDataChange?: (data: T[], changeInfo?: ChangeInfo) => void;
   rowHeight?: number;
   enableFillHandle?: boolean;
   enableRowDrag?: boolean;
@@ -63,11 +71,9 @@ export function DataGrid<T>({
     colId: string;
   } | null>(null);
 
-  // ROW DRAG STATE
   const [draggedRowIndex, setDraggedRowIndex] = useState<number | null>(null);
   const [dragOverRowIndex, setDragOverRowIndex] = useState<number | null>(null);
 
-  // TOOLTIP STATE
   const [tooltip, setTooltip] = useState<{
     text: string;
     x: number;
@@ -80,12 +86,10 @@ export function DataGrid<T>({
     setLocalData(data);
   }, [data]);
 
-  const updateData = (newData: T[]) => {
+  const updateData = (newData: T[], changeInfo?: ChangeInfo) => {
     setLocalData(newData);
-    onDataChange?.(newData);
+    onDataChange?.(newData, changeInfo);
   };
-
-  // ==================== TOOLTIP ====================
 
   const showTooltip = (text: string, x: number, y: number) => {
     setTooltip({ text, x, y });
@@ -95,13 +99,10 @@ export function DataGrid<T>({
     setTooltip(null);
   };
 
-  // ==================== CELL MOUSE EVENTS ====================
-
   const handleCellMouseEnter = (rowIndex: number, colId: string, row: T) => {
     if (fillHandleActive && fillStartCell) {
       setFillEndCell({ rowIndex, colId });
     } else {
-      // Mostrar tooltip se existir
       const column = columns.find((col) => col.id === colId);
       if (column?.getTooltip) {
         const tooltipText = column.getTooltip(row);
@@ -111,15 +112,12 @@ export function DataGrid<T>({
           ) as HTMLElement;
           if (cell) {
             const rect = cell.getBoundingClientRect();
-            // ✅ AGORA USA A FUNÇÃO showTooltip
             showTooltip(tooltipText, rect.left + rect.width / 2, rect.top - 10);
           }
         }
       }
     }
   };
-
-  // ==================== FILL HANDLE ====================
 
   const handleFillHandleMouseDown = (e: React.MouseEvent) => {
     if (!selectedCell || !enableFillHandle) return;
@@ -149,7 +147,7 @@ export function DataGrid<T>({
       document.addEventListener("mouseup", handleMouseUp);
       return () => document.removeEventListener("mouseup", handleMouseUp);
     }
-  }, [fillHandleActive, fillStartCell, fillEndCell]);
+  }, [fillHandleActive, fillStartCell, fillEndCell, localData]);
 
   const applyFillHandle = () => {
     if (!fillStartCell || !fillEndCell) return;
@@ -179,10 +177,9 @@ export function DataGrid<T>({
       }
     }
 
-    updateData(newData);
+    // ✅ MÚLTIPLAS CÉLULAS
+    updateData(newData, { isMultiple: true });
   };
-
-  // ==================== ROW DRAG ====================
 
   const handleRowDragStart = (e: React.DragEvent, rowIndex: number) => {
     if (!enableRowDrag) return;
@@ -229,12 +226,11 @@ export function DataGrid<T>({
     const [draggedRow] = newData.splice(draggedRowIndex, 1);
     newData.splice(dropIndex, 0, draggedRow);
 
-    updateData(newData);
+    // ✅ DRAG É MÚLTIPLO
+    updateData(newData, { isMultiple: true });
     setDraggedRowIndex(null);
     setDragOverRowIndex(null);
   };
-
-  // ==================== CELL SELECTION ====================
 
   const handleCellClick = (rowIndex: number, colId: string) => {
     if (editingCell) return;
@@ -270,12 +266,20 @@ export function DataGrid<T>({
     if (!column?.setValue) return;
 
     const newData = [...localData];
+    const oldValue = column.getValue?.(newData[editingCell.rowIndex]);
     column.setValue(newData[editingCell.rowIndex], value);
-    updateData(newData);
+
+    // ✅ MUDANÇA INDIVIDUAL
+    updateData(newData, {
+      rowIndex: editingCell.rowIndex,
+      columnId: editingCell.colId,
+      oldValue,
+      newValue: value,
+      isMultiple: false,
+    });
+
     setEditingCell(null);
   };
-
-  // ==================== HELPERS ====================
 
   const isCellInFillRange = (rowIndex: number, colId: string) => {
     if (!fillHandleActive || !fillStartCell || !fillEndCell) return false;
@@ -330,105 +334,112 @@ export function DataGrid<T>({
             </tr>
           </thead>
           <tbody>
-            {localData.map((row, rowIndex) => (
-              <tr
-                key={rowIndex}
-                style={{ height: rowHeight }}
-                draggable={enableRowDrag}
-                onDragStart={(e) => handleRowDragStart(e, rowIndex)}
-                onDragEnd={handleRowDragEnd}
-                onDragOver={(e) => handleRowDragOver(e, rowIndex)}
-                onDragLeave={handleRowDragLeave}
-                onDrop={(e) => handleRowDrop(e, rowIndex)}
-                className={`
-                  ${draggedRowIndex === rowIndex ? "dragging" : ""}
-                  ${dragOverRowIndex === rowIndex ? "drag-over" : ""}
-                `}
-              >
-                {enableRowDrag && (
-                  <td className="drag-handle-cell">
-                    <div className="drag-handle-icon">⋮⋮</div>
-                  </td>
-                )}
-                {columns.map((col) => {
-                  const value = col.getValue?.(row);
-                  const isSelected =
-                    selectedCell?.rowIndex === rowIndex &&
-                    selectedCell?.colId === col.id;
-                  const isEditing =
-                    editingCell?.rowIndex === rowIndex &&
-                    editingCell?.colId === col.id;
-                  const isInFillRange = isCellInFillRange(rowIndex, col.id);
+            {localData.map((row, rowIndex) => {
+              // ✅ KEY ÚNICA baseada no ID da linha + índice
+              const rowData = row as any;
+              const uniqueKey = rowData.id
+                ? `row-${rowData.id}`
+                : `row-${rowIndex}-${Date.now()}`;
 
-                  return (
-                    <td
-                      key={col.id}
-                      data-row={rowIndex}
-                      data-col={col.id}
-                      className={`
-                        ${isSelected ? "selected" : ""}
-                        ${isInFillRange ? "fill-range" : ""}
-                        ${col.editable ? "editable" : ""}
-                        ${col.pinned ? `pinned-${col.pinned}` : ""}
-                      `}
-                      style={col.getStyle?.(value, row)}
-                      onClick={() => {
-                        handleCellClick(rowIndex, col.id);
-                        handleCellClickForSelect(rowIndex, col.id);
-                      }}
-                      onDoubleClick={(e) =>
-                        handleCellDoubleClick(e, rowIndex, col.id)
-                      }
-                      onMouseEnter={() =>
-                        handleCellMouseEnter(rowIndex, col.id, row)
-                      }
-                      onMouseLeave={handleCellMouseLeave}
-                    >
-                      {isEditing && col.editor === "select" && col.options ? (
-                        <select
-                          autoFocus
-                          value={value}
-                          onChange={(e) => handleEditChange(e.target.value)}
-                          onBlur={() => setEditingCell(null)}
-                          className="cell-editor-select"
-                        >
-                          {col.options.map((opt) => (
-                            <option key={opt} value={opt}>
-                              {opt}
-                            </option>
-                          ))}
-                        </select>
-                      ) : isEditing && col.editor === "text" ? (
-                        <input
-                          autoFocus
-                          type="text"
-                          value={value}
-                          onChange={(e) => handleEditChange(e.target.value)}
-                          onBlur={() => setEditingCell(null)}
-                          className="cell-editor-input"
-                        />
-                      ) : col.render ? (
-                        col.render(value, row, rowIndex)
-                      ) : (
-                        value
-                      )}
-
-                      {isSelected && enableFillHandle && col.editable && (
-                        <div
-                          className="fill-handle"
-                          onMouseDown={handleFillHandleMouseDown}
-                        />
-                      )}
+              return (
+                <tr
+                  key={uniqueKey} // ← KEY ÚNICA
+                  style={{ height: rowHeight }}
+                  draggable={enableRowDrag}
+                  onDragStart={(e) => handleRowDragStart(e, rowIndex)}
+                  onDragEnd={handleRowDragEnd}
+                  onDragOver={(e) => handleRowDragOver(e, rowIndex)}
+                  onDragLeave={handleRowDragLeave}
+                  onDrop={(e) => handleRowDrop(e, rowIndex)}
+                  className={`
+          ${draggedRowIndex === rowIndex ? "dragging" : ""}
+          ${dragOverRowIndex === rowIndex ? "drag-over" : ""}
+        `}
+                >
+                  {enableRowDrag && (
+                    <td className="drag-handle-cell">
+                      <div className="drag-handle-icon">⋮⋮</div>
                     </td>
-                  );
-                })}
-              </tr>
-            ))}
+                  )}
+                  {columns.map((col) => {
+                    const value = col.getValue?.(row);
+                    const isSelected =
+                      selectedCell?.rowIndex === rowIndex &&
+                      selectedCell?.colId === col.id;
+                    const isEditing =
+                      editingCell?.rowIndex === rowIndex &&
+                      editingCell?.colId === col.id;
+                    const isInFillRange = isCellInFillRange(rowIndex, col.id);
+
+                    return (
+                      <td
+                        key={col.id}
+                        data-row={rowIndex}
+                        data-col={col.id}
+                        className={`
+                ${isSelected ? "selected" : ""}
+                ${isInFillRange ? "fill-range" : ""}
+                ${col.editable ? "editable" : ""}
+                ${col.pinned ? `pinned-${col.pinned}` : ""}
+              `}
+                        style={col.getStyle?.(value, row)}
+                        onClick={() => {
+                          handleCellClick(rowIndex, col.id);
+                          handleCellClickForSelect(rowIndex, col.id);
+                        }}
+                        onDoubleClick={(e) =>
+                          handleCellDoubleClick(e, rowIndex, col.id)
+                        }
+                        onMouseEnter={() =>
+                          handleCellMouseEnter(rowIndex, col.id, row)
+                        }
+                        onMouseLeave={handleCellMouseLeave}
+                      >
+                        {isEditing && col.editor === "select" && col.options ? (
+                          <select
+                            autoFocus
+                            value={value}
+                            onChange={(e) => handleEditChange(e.target.value)}
+                            onBlur={() => setEditingCell(null)}
+                            className="cell-editor-select"
+                          >
+                            {col.options.map((opt) => (
+                              <option key={opt} value={opt}>
+                                {opt}
+                              </option>
+                            ))}
+                          </select>
+                        ) : isEditing && col.editor === "text" ? (
+                          <input
+                            autoFocus
+                            type="text"
+                            value={value}
+                            onChange={(e) => handleEditChange(e.target.value)}
+                            onBlur={() => setEditingCell(null)}
+                            className="cell-editor-input"
+                          />
+                        ) : col.render ? (
+                          col.render(value, row, rowIndex)
+                        ) : (
+                          value
+                        )}
+
+                        {isSelected && enableFillHandle && col.editable && (
+                          <div
+                            className="fill-handle"
+                            onMouseDown={handleFillHandleMouseDown}
+                          />
+                        )}
+                      </td>
+                    );
+                  })}
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
 
-      {/* TOOLTIP CUSTOMIZADO */}
       {tooltip && (
         <div
           className="custom-tooltip"
